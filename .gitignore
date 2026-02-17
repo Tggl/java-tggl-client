@@ -1,0 +1,44 @@
+# Gradle
+.gradle/
+build/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test output
+test-results/
+reports/
+
+# Local configuration
+local.properties
+gradle.properties.local
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+*.class
+
+# But keep the Gradle wrapper jar (must come after *.jar)
+!gradle/wrapper/gradle-wrapper.jar
+
+# Secrets
+.env
+*.pem
+*.key

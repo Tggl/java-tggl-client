@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +31,7 @@ public final class Flag {
     ) {
         this.slug = slug;
         this.defaultVariation = defaultVariation;
-        this.conditions = List.copyOf(conditions);
+        this.conditions = Collections.unmodifiableList(new ArrayList<>(conditions));
     }
 
     @Nullable
@@ -50,7 +52,8 @@ public final class Flag {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Flag flag)) return false;
+        if (!(o instanceof Flag)) return false;
+        Flag flag = (Flag) o;
         return Objects.equals(slug, flag.slug)
             && defaultVariation.equals(flag.defaultVariation)
             && conditions.equals(flag.conditions);

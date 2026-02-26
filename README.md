@@ -1,6 +1,6 @@
 # Tggl Java Client
 
-Java SDK for [Tggl](https://tggl.io) feature flags. Works with both Java and Kotlin.
+Java SDK for [Tggl](https://tggl.io) feature flags. Works with Java, Kotlin, and Android.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.tggl/tggl-client)](https://search.maven.org/artifact/io.tggl/tggl-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -42,6 +42,7 @@ The `TgglClient` fetches the flag configuration once and evaluates flags locally
 ```java
 import io.tggl.TgglClient;
 import io.tggl.TgglClientOptions;
+import java.util.HashMap;
 import java.util.Map;
 
 // Create client
@@ -54,11 +55,10 @@ TgglClient client = new TgglClient(TgglClientOptions.builder()
 client.waitReady().join();
 
 // Evaluate flags for a user
-Map<String, Object> context = Map.of(
-    "userId", "user-123",
-    "email", "user@example.com",
-    "country", "US"
-);
+Map<String, Object> context = new HashMap<>();
+context.put("userId", "user-123");
+context.put("email", "user@example.com");
+context.put("country", "US");
 
 boolean showFeature = client.get(context, "newFeature", false);
 String variant = client.get(context, "experimentVariant", "control");
@@ -173,8 +173,8 @@ If you have pre-computed flag values (e.g., from server-side rendering), you can
 
 ```java
 TgglStaticClient staticClient = new TgglStaticClient.Builder()
-    .flags(Map.of("feature1", true, "variant", "A"))
-    .context(Map.of("userId", "123"))
+    .flags(Collections.singletonMap("feature1", true))
+    .context(Collections.singletonMap("userId", "123"))
     .build();
 
 boolean feature = staticClient.get("feature1", false);
@@ -244,7 +244,8 @@ All clients are thread-safe and can be shared across threads. Use a single insta
 
 ## Requirements
 
-- Java 17 or higher
+- Java 8 or higher
+- Android API 24+ (Android 7.0+), with core library desugaring recommended for older API levels
 - Works with Kotlin 1.5+
 
 ## Dependencies

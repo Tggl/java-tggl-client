@@ -86,28 +86,29 @@ public final class FlagEvaluator {
             return false;
         }
 
-        return switch (op) {
-            case EMPTY -> throw new AssertionError("unreachable");
-            case TRUE -> evalTrue(rule, value);
-            case STR_EQUAL -> evalStrEqual(rule, value);
-            case STR_EQUAL_SOFT -> evalStrEqualSoft(rule, value);
-            case STR_CONTAINS -> evalStrContains(rule, value);
-            case STR_STARTS_WITH -> evalStrStartsWith(rule, value);
-            case STR_ENDS_WITH -> evalStrEndsWith(rule, value);
-            case STR_AFTER -> evalStrAfter(rule, value);
-            case STR_BEFORE -> evalStrBefore(rule, value);
-            case REGEXP -> evalRegexp(rule, value);
-            case EQ -> evalEq(rule, value);
-            case LT -> evalLt(rule, value);
-            case GT -> evalGt(rule, value);
-            case ARR_OVERLAP -> evalArrOverlap(rule, value);
-            case DATE_AFTER -> evalDateAfter(rule, value);
-            case DATE_BEFORE -> evalDateBefore(rule, value);
-            case SEMVER_EQ -> evalSemverEq(rule, value);
-            case SEMVER_GTE -> evalSemverGte(rule, value);
-            case SEMVER_LTE -> evalSemverLte(rule, value);
-            case PERCENTAGE -> evalPercentage(rule, value);
-        };
+        switch (op) {
+            case EMPTY: throw new AssertionError("unreachable");
+            case TRUE: return evalTrue(rule, value);
+            case STR_EQUAL: return evalStrEqual(rule, value);
+            case STR_EQUAL_SOFT: return evalStrEqualSoft(rule, value);
+            case STR_CONTAINS: return evalStrContains(rule, value);
+            case STR_STARTS_WITH: return evalStrStartsWith(rule, value);
+            case STR_ENDS_WITH: return evalStrEndsWith(rule, value);
+            case STR_AFTER: return evalStrAfter(rule, value);
+            case STR_BEFORE: return evalStrBefore(rule, value);
+            case REGEXP: return evalRegexp(rule, value);
+            case EQ: return evalEq(rule, value);
+            case LT: return evalLt(rule, value);
+            case GT: return evalGt(rule, value);
+            case ARR_OVERLAP: return evalArrOverlap(rule, value);
+            case DATE_AFTER: return evalDateAfter(rule, value);
+            case DATE_BEFORE: return evalDateBefore(rule, value);
+            case SEMVER_EQ: return evalSemverEq(rule, value);
+            case SEMVER_GTE: return evalSemverGte(rule, value);
+            case SEMVER_LTE: return evalSemverLte(rule, value);
+            case PERCENTAGE: return evalPercentage(rule, value);
+            default: return false;
+        }
     }
 
     private static boolean evalTrue(@NotNull Rule rule, @NotNull Object value) {
@@ -146,9 +147,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalStrContains(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         List<String> values = rule.getValues();
         if (values == null) {
             return false;
@@ -158,9 +160,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalStrStartsWith(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         List<String> values = rule.getValues();
         if (values == null) {
             return false;
@@ -170,9 +173,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalStrEndsWith(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         List<String> values = rule.getValues();
         if (values == null) {
             return false;
@@ -182,9 +186,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalStrAfter(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         String ruleValue = rule.getValue();
         if (ruleValue == null) {
             return false;
@@ -194,9 +199,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalStrBefore(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         String ruleValue = rule.getValue();
         if (ruleValue == null) {
             return false;
@@ -206,9 +212,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalRegexp(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         String patternStr = rule.getValue();
         if (patternStr == null) {
             return false;
@@ -226,9 +233,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalEq(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof Number numValue)) {
+        if (!(value instanceof Number)) {
             return false;
         }
+        Number numValue = (Number) value;
         Double ruleValue = rule.getNumericValue();
         if (ruleValue == null) {
             return false;
@@ -238,9 +246,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalLt(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof Number numValue)) {
+        if (!(value instanceof Number)) {
             return false;
         }
+        Number numValue = (Number) value;
         Double ruleValue = rule.getNumericValue();
         if (ruleValue == null) {
             return false;
@@ -250,9 +259,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalGt(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof Number numValue)) {
+        if (!(value instanceof Number)) {
             return false;
         }
+        Number numValue = (Number) value;
         Double ruleValue = rule.getNumericValue();
         if (ruleValue == null) {
             return false;
@@ -262,9 +272,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalArrOverlap(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof Collection<?> collection)) {
+        if (!(value instanceof Collection)) {
             return false;
         }
+        Collection<?> collection = (Collection<?>) value;
         List<String> values = rule.getValues();
         if (values == null) {
             return false;
@@ -277,11 +288,11 @@ public final class FlagEvaluator {
         Long timestamp = rule.getTimestamp();
         String iso = rule.getIso();
         
-        if (value instanceof String strValue) {
+        if (value instanceof String) {
+            String strValue = (String) value;
             if (iso == null) {
                 return false;
             }
-            // Pad the value to match format "2000-01-01T23:59:59"
             String template = "2000-01-01T23:59:59";
             String paddedValue = strValue.length() < template.length() 
                 ? strValue + template.substring(strValue.length())
@@ -290,12 +301,12 @@ public final class FlagEvaluator {
             return matches != rule.isNegate();
         }
         
-        if (value instanceof Number numValue) {
+        if (value instanceof Number) {
+            Number numValue = (Number) value;
             if (timestamp == null) {
                 return false;
             }
             long val = numValue.longValue();
-            // Handle seconds vs milliseconds
             if (val < EPOCH_THRESHOLD) {
                 val = val * 1000;
             }
@@ -310,11 +321,11 @@ public final class FlagEvaluator {
         Long timestamp = rule.getTimestamp();
         String iso = rule.getIso();
         
-        if (value instanceof String strValue) {
+        if (value instanceof String) {
+            String strValue = (String) value;
             if (iso == null) {
                 return false;
             }
-            // Pad the value to match format "2000-01-01T00:00:00"
             String template = "2000-01-01T00:00:00";
             String paddedValue = strValue.length() < template.length()
                 ? strValue + template.substring(strValue.length())
@@ -323,12 +334,12 @@ public final class FlagEvaluator {
             return matches != rule.isNegate();
         }
         
-        if (value instanceof Number numValue) {
+        if (value instanceof Number) {
+            Number numValue = (Number) value;
             if (timestamp == null) {
                 return false;
             }
             long val = numValue.longValue();
-            // Handle seconds vs milliseconds
             if (val < EPOCH_THRESHOLD) {
                 val = val * 1000;
             }
@@ -340,9 +351,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalSemverEq(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         List<Integer> ruleVersion = rule.getVersion();
         if (ruleVersion == null || ruleVersion.isEmpty()) {
             return false;
@@ -360,9 +372,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalSemverGte(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         List<Integer> ruleVersion = rule.getVersion();
         if (ruleVersion == null || ruleVersion.isEmpty()) {
             return false;
@@ -388,9 +401,10 @@ public final class FlagEvaluator {
     }
 
     private static boolean evalSemverLte(@NotNull Rule rule, @NotNull Object value) {
-        if (!(value instanceof String strValue)) {
+        if (!(value instanceof String)) {
             return false;
         }
+        String strValue = (String) value;
         List<Integer> ruleVersion = rule.getVersion();
         if (ruleVersion == null || ruleVersion.isEmpty()) {
             return false;

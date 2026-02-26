@@ -39,7 +39,7 @@ import java.util.function.Consumer;
  * client.waitReady().join();
  * 
  * // Evaluate flags
- * Map<String, Object> context = Map.of("userId", "123");
+ * Map<String, Object> context = Collections.singletonMap("userId", "123");
  * boolean value = client.get(context, "myFlag", false);
  * }</pre>
  * <p>
@@ -93,7 +93,7 @@ public class TgglClient implements AutoCloseable {
     private volatile Exception error = null;
     
     // Thread-safe config storage: volatile reference swapped atomically on updates
-    private volatile Map<String, Flag> config = Map.of();
+    private volatile Map<String, Flag> config = Collections.emptyMap();
 
     /**
      * Creates a new TgglClient with the given options.
@@ -176,7 +176,7 @@ public class TgglClient implements AutoCloseable {
                         return;
                     }
                     try {
-                        Map<String, Object> parsed = objectMapper.readValue(value, new TypeReference<>() {});
+                        Map<String, Object> parsed = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {});
                         if (parsed == null || !"TgglClientState".equals(parsed.get("type"))) {
                             return;
                         }
@@ -504,12 +504,12 @@ public class TgglClient implements AutoCloseable {
                         
                         if (httpResponse.isSuccessful() && httpResponse.body() != null) {
                             String body = httpResponse.body().string();
-                            response = objectMapper.readValue(body, new TypeReference<>() {});
+                            response = objectMapper.readValue(body, new TypeReference<List<Flag>>() {});
                             break;
                         } else {
                             String errorBody = httpResponse.body() != null ? httpResponse.body().string() : "";
                             try {
-                                Map<String, Object> errorJson = objectMapper.readValue(errorBody, new TypeReference<>() {});
+                                Map<String, Object> errorJson = objectMapper.readValue(errorBody, new TypeReference<Map<String, Object>>() {});
                                 if (errorJson.containsKey("error")) {
                                     lastError = new IOException(errorJson.get("error").toString());
                                 } else {
@@ -666,9 +666,53 @@ public class TgglClient implements AutoCloseable {
     /**
      * Event data for flag evaluation.
      */
-    public record FlagEvalEvent(
-        @Nullable Object value,
-        @Nullable Object defaultValue,
-        @NotNull String slug
-    ) {}
+    public static final class FlagEvalEvent {
+        @Nullable
+        private final Object value;
+        @Nullable
+        private final Object defaultValue;
+        @NotNull
+        private final String slug;
+
+        public FlagEvalEvent(@Nullable Object value, @Nullable Object defaultValue, @NotNull String slug) {
+            this.value = value;
+            this.defaultValue = defaultValue;
+            this.slug = slug;
+        }
+
+        @Nullable
+        public Object value() {
+            return value;
+        }
+
+        @Nullable
+        public Object defaultValue() {
+            return defaultValue;
+        }
+
+        @NotNull
+        public String slug() {
+            return slug;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof FlagEvalEvent)) return false;
+            FlagEvalEvent that = (FlagEvalEvent) o;
+            return Objects.equals(value, that.value)
+                && Objects.equals(defaultValue, that.defaultValue)
+                && slug.equals(that.slug);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value, defaultValue, slug);
+        }
+
+        @Override
+        public String toString() {
+            return "FlagEvalEvent[value=" + value + ", defaultValue=" + defaultValue + ", slug=" + slug + "]";
+        }
+    }
 }

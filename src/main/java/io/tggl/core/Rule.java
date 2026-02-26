@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,10 +76,10 @@ public class Rule {
         this.rangeStart = rangeStart;
         this.rangeEnd = rangeEnd;
         this.seed = seed;
-        this.values = values != null ? List.copyOf(values) : null;
+        this.values = values != null ? Collections.unmodifiableList(new ArrayList<>(values)) : null;
         this.timestamp = timestamp;
         this.iso = iso;
-        this.version = version != null ? List.copyOf(version) : null;
+        this.version = version != null ? Collections.unmodifiableList(new ArrayList<>(version)) : null;
         
         // Handle the 'value' field which can be string or number
         if (value instanceof String) {
@@ -154,7 +156,8 @@ public class Rule {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Rule rule)) return false;
+        if (!(o instanceof Rule)) return false;
+        Rule rule = (Rule) o;
         return negate == rule.negate
             && key.equals(rule.key)
             && operator == rule.operator

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
  * Usage in Java:
  * <pre>{@code
  * TgglStaticClient client = new TgglStaticClient.Builder()
- *     .flags(Map.of("myFlag", true))
+ *     .flags(Collections.singletonMap("myFlag", true))
  *     .reporting(reporting)
  *     .build();
  * 
@@ -125,11 +126,55 @@ public class TgglStaticClient {
     /**
      * Event data for flag evaluation.
      */
-    public record FlagEvalEvent(
-        @Nullable Object value,
-        @Nullable Object defaultValue,
-        @NotNull String slug
-    ) {}
+    public static final class FlagEvalEvent {
+        @Nullable
+        private final Object value;
+        @Nullable
+        private final Object defaultValue;
+        @NotNull
+        private final String slug;
+
+        public FlagEvalEvent(@Nullable Object value, @Nullable Object defaultValue, @NotNull String slug) {
+            this.value = value;
+            this.defaultValue = defaultValue;
+            this.slug = slug;
+        }
+
+        @Nullable
+        public Object value() {
+            return value;
+        }
+
+        @Nullable
+        public Object defaultValue() {
+            return defaultValue;
+        }
+
+        @NotNull
+        public String slug() {
+            return slug;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof FlagEvalEvent)) return false;
+            FlagEvalEvent that = (FlagEvalEvent) o;
+            return Objects.equals(value, that.value)
+                && Objects.equals(defaultValue, that.defaultValue)
+                && slug.equals(that.slug);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value, defaultValue, slug);
+        }
+
+        @Override
+        public String toString() {
+            return "FlagEvalEvent[value=" + value + ", defaultValue=" + defaultValue + ", slug=" + slug + "]";
+        }
+    }
 
     /**
      * Builder for TgglStaticClient.

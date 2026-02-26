@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,8 +35,8 @@ public enum Operator {
     SEMVER_GTE("SEMVER_GTE"),
     SEMVER_LTE("SEMVER_LTE");
 
-    private static final Map<String, Operator> BY_VALUE = Stream.of(values())
-        .collect(Collectors.toUnmodifiableMap(Operator::getValue, Function.identity()));
+    private static final Map<String, Operator> BY_VALUE = Collections.unmodifiableMap(
+        Stream.of(values()).collect(Collectors.toMap(Operator::getValue, Function.identity())));
 
     private final String value;
 

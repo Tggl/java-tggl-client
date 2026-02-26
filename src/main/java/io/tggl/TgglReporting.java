@@ -123,11 +123,11 @@ public class TgglReporting implements AutoCloseable {
         
         // Collect flags report (atomic swap: replace with new empty map, process old)
         if (!reportFlags.isEmpty()) {
-            var flagsToReport = reportFlags;
+            ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, FlagReport>>> flagsToReport = reportFlags;
             reportFlags = new ConcurrentHashMap<>();
             
             List<Map<String, Object>> clients = new ArrayList<>();
-            for (var clientEntry : flagsToReport.entrySet()) {
+            for (Map.Entry<String, ConcurrentHashMap<String, ConcurrentHashMap<String, FlagReport>>> clientEntry : flagsToReport.entrySet()) {
                 Map<String, Object> client = new HashMap<>();
                 String clientId = clientEntry.getKey();
                 if (!clientId.isEmpty()) {
@@ -135,7 +135,7 @@ public class TgglReporting implements AutoCloseable {
                 }
                 
                 Map<String, List<Map<String, Object>>> flags = new HashMap<>();
-                for (var slugEntry : clientEntry.getValue().entrySet()) {
+                for (Map.Entry<String, ConcurrentHashMap<String, FlagReport>> slugEntry : clientEntry.getValue().entrySet()) {
                     List<Map<String, Object>> values = new ArrayList<>();
                     for (FlagReport flagReport : slugEntry.getValue().values()) {
                         Map<String, Object> value = new HashMap<>();
@@ -154,7 +154,7 @@ public class TgglReporting implements AutoCloseable {
         
         // Collect properties report (atomic swap)
         if (!reportProperties.isEmpty()) {
-            var receivedProperties = reportProperties;
+            ConcurrentHashMap<String, long[]> receivedProperties = reportProperties;
             reportProperties = new ConcurrentHashMap<>();
             
             Map<String, List<Long>> propsMap = new HashMap<>();
@@ -167,10 +167,10 @@ public class TgglReporting implements AutoCloseable {
         // Collect values report (atomic swap)
         List<List<String>> values = new ArrayList<>();
         if (!reportValues.isEmpty()) {
-            var receivedValues = reportValues;
+            ConcurrentHashMap<String, ConcurrentHashMap<String, String>> receivedValues = reportValues;
             reportValues = new ConcurrentHashMap<>();
             
-            for (var keyEntry : receivedValues.entrySet()) {
+            for (Map.Entry<String, ConcurrentHashMap<String, String>> keyEntry : receivedValues.entrySet()) {
                 for (Map.Entry<String, String> valueEntry : keyEntry.getValue().entrySet()) {
                     String label = valueEntry.getValue();
                     if (label != null) {
@@ -326,7 +326,8 @@ public class TgglReporting implements AutoCloseable {
                     }
                 });
                 
-                if (value instanceof String strValue && !strValue.isEmpty()) {
+                if (value instanceof String && !((String) value).isEmpty()) {
+                    String strValue = (String) value;
                     String constantCaseKey = toConstantCase(key).replaceAll("_I_D$", "_ID");
                     String labelKeyTarget = constantCaseKey.endsWith("_ID") 
                         ? constantCaseKey.substring(0, constantCaseKey.length() - 3) + "_NAME"
@@ -345,8 +346,11 @@ public class TgglReporting implements AutoCloseable {
                     String finalLabelKey = labelKey;
                     reportValues.computeIfAbsent(key, k -> new ConcurrentHashMap<>())
                         .compute(strValue, (k, existing) -> {
-                            if (finalLabelKey != null && context.get(finalLabelKey) instanceof String label && !label.isEmpty()) {
-                                return label;
+                            if (finalLabelKey != null) {
+                                Object labelObj = context.get(finalLabelKey);
+                                if (labelObj instanceof String && !((String) labelObj).isEmpty()) {
+                                    return (String) labelObj;
+                                }
                             }
                             return existing;
                         });
